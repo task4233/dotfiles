@@ -108,5 +108,12 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# load bash-completion
 source ~/.git-completion.bash
 source ~/.git-prompt.sh
+
+# set path
+PATH=$PATH:/usr/local/go/bin
+GOPATH=/root/go
+PATH=$GOPATH/bin:$PATH

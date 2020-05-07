@@ -1,7 +1,14 @@
 *
+!.gitignore
 
 # Whitelist
-!.gitignore
+## main
 !.bashrc
 !.git-prompt.sh
 !.git-completion.bash
+
+## emacs
+# ref: [.gitignore whitelist on directory and its contents](https://stackoverflow.com/questions/15288712/gitignore-whitelist-on-directory-and-its-contents) 
+!.emacs.d
+/.emacs.d/*
+!.emacs.d/init.el
