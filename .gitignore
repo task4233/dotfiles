@@ -1,0 +1,7 @@
+*
+
+# Whitelist
+!.gitignore
+!.bashrc
+!.git-prompt.sh
+!.git-completion.bash
