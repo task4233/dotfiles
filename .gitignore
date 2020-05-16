@@ -7,6 +7,11 @@
 !.git-prompt.sh
 !.git-completion.bash
 
+## pubkey
+!.ssh
+/.ssh/*
+!.ssh/al17111_rsa.pub
+
 ## emacs
 # ref: [.gitignore whitelist on directory and its contents](https://stackoverflow.com/questions/15288712/gitignore-whitelist-on-directory-and-its-contents) 
 !.emacs.d
