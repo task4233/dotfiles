@@ -92,7 +92,7 @@
 ;;
 (add-to-list 'exec-path (expand-file-name "/usr/local/go/bin"))
 (add-to-list 'exec-path (expand-file-name "/root/go/bin"))
-(add-to-list 'load-path "/root/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/lisp")
 
 (require 'auto-complete)
 (require 'go-autocomplete)
