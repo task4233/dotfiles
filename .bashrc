@@ -25,7 +25,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='\[\e[m\]\w\[\e[m\]:\[\e[1;36m\]$(__git_ps1 "(%s)")\n\[\e[m\]\$ '
+    PS1='\[\e[m\]$(pwd)\[\e[m\] \[\e[1;36m\]$(__git_ps1 "(%s)")\n\[\e[m\]\$ '
 else
     PS1='\w\$ '
 fi
