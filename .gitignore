@@ -18,3 +18,5 @@
 !.emacs.d
 /.emacs.d/*
 !.emacs.d/init.el
+
+!authorize_gpg.sh
