@@ -1,22 +1,36 @@
 (require 'package)
-
-;; MELPAを追加
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-;; MELPA-stableを追加
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-
-;; Marmaladeを追加
-(add-to-list 'package-archives  '("marmalade" . "http://marmalade-repo.org/packages/") t)
-
-;; Orgを追加
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-
-(package-initialize)
 (setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.milkbox.net/packages/")
-	("marmalade" . "http://marmalade-repo.org/packages/")))
+  '(("gnu" . "https://elpa.gnu.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")
+     ("org" . "http://orgmode.org/elpa/")))
+(package-initialize)
+
+(defun require-package (package &optional min-version no-refresh)
+  "Install given PACKAGE, optionally requiring MIN-VERSION.
+If NO-REFRESH is non-nil, the available package lists will not be
+re-downloaded in order to locate PACKAGE."
+  (if (package-installed-p package min-version)
+    t
+    (if (or (assoc package package-archive-contents) no-refresh)
+      (if (boundp 'package-selected-packages)
+        ;; Record this as a package the user installed explicitly
+        (package-install package nil)
+        (package-install package))
+      (progn
+        (package-refresh-contents)
+        (require-package package min-version t)))))
+
+(defun maybe-require-package (package &optional min-version no-refresh)
+  "Try to install PACKAGE, and return non-nil if successful.
+In the event of failure, return nil and print a warning message.
+Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
+available package lists will not be re-downloaded in order to
+locate PACKAGE."
+  (condition-case err
+    (require-package package min-version no-refresh)
+    (error
+      (message "Couldn't install optional package `%s': %S" package err)
+      nil)))
 
 ;; show line-num
 (global-linum-mode)
@@ -81,17 +95,19 @@
 ;;
 ;; undo-tree
 ;;
+(require-package 'undo-tree)
 (require 'undo-tree)
 (global-undo-tree-mode t)
 (global-set-key (kbd "M-/") 'undo-tree-redo)
 
 ;; rainbow-delimiters を使うための設定
-(require 'rainbow-delimiters)
+(require-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 ;;
 ;; vue mode
 ;;
+(require-package 'flycheck)
 (require 'flycheck)
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 (eval-after-load 'vue-mode
@@ -108,6 +124,8 @@
 (add-to-list 'exec-path (expand-file-name "/root/go/bin"))
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
+(require-package 'auto-complete)
+(require-package 'go-autocomplete)
 (require 'auto-complete)
 (require 'go-autocomplete)
 (require 'auto-complete-config)
@@ -127,7 +145,7 @@
 ;;
 ;; company-go
 ;;
-(require 'company-go)
+(require-package 'company-go)
 (add-hook 'go-mode-hook (lambda()
 			  (company-mode)
 			  (setq company-transformers '(company-sort-by-backend-importance)) ; sorted
@@ -148,122 +166,10 @@
 (setq gofmt-command "goimports")
 (add-hook 'before-save-hook 'gofmt-before-save)
 
-;;
-;; YaTeX
-;;
-(autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
-(setq auto-mode-alist
-      (append '(("\\.tex$" . yatex-mode)
-                ("\\.ltx$" . yatex-mode)
-                ("\\.cls$" . yatex-mode)
-                ("\\.sty$" . yatex-mode)
-                ("\\.clo$" . yatex-mode)
-                ("\\.bbl$" . yatex-mode)) auto-mode-alist))
-(setq YaTeX-inhibit-prefix-letter t)
-(setq YaTeX-kanji-code nil)
-(setq YaTeX-latex-message-code 'utf-8)
-(setq YaTeX-use-LaTeX2e t)
-(setq YaTeX-use-AMS-LaTeX t)
-(setq YaTeX-dvi2-command-ext-alist
-      '(("TeXworks\\|texworks\\|texstudio\\|mupdf\\|SumatraPDF\\|Preview\\|Skim\\|TeXShop\\|evince\\|atril\\|xreader\\|okular\\|zathura\\|qpdfview\\|Firefox\\|firefox\\|chrome\\|chromium\\|MicrosoftEdge\\|microsoft-edge\\|Adobe\\|Acrobat\\|AcroRd32\\|acroread\\|pdfopen\\|xdg-open\\|open\\|start" . ".pdf")))
-(setq tex-command "ptex2pdf -u -l -ot '-synctex=1'")
-;(setq tex-command "lualatex -synctex=1")
-;(setq tex-command "latexmk")
-;(setq tex-command "latexmk -e '$latex=q/uplatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -e '$dvipdf=q/dvipdfmx %O -o %D %S/' -norc -gg -pdfdvi")
-;(setq tex-command "latexmk -e '$lualatex=q/lualatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -norc -gg -pdflua")
-(setq bibtex-command "latexmk -e '$latex=q/uplatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -e '$dvipdf=q/dvipdfmx %O -o %D %S/' -norc -gg -pdfdvi")
-(setq makeindex-command  "latexmk -e '$latex=q/uplatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -e '$dvipdf=q/dvipdfmx %O -o %D %S/' -norc -gg -pdfdvi")
-;(setq dvi2-command "xdg-open")
-(setq dvi2-command "evince")
-;(setq dvi2-command "atril")
-;(setq dvi2-command "okular --unique")
-;(setq dvi2-command "zathura -x \"emacsclient --no-wait +%{line} %{input}\"")
-;(setq dvi2-command "qpdfview --unique")
-;(setq dvi2-command "texworks")
-;(setq dvi2-command "texstudio --pdf-viewer-only")
-;(setq tex-pdfview-command "xdg-open")
-(setq tex-pdfview-command "evince")
-;(setq tex-pdfview-command "atril")
-;(setq tex-pdfview-command "okular --unique")
-;(setq tex-pdfview-command "zathura -x \"emacsclient --no-wait +%{line} %{input}\"")
-;(setq tex-pdfview-command "qpdfview --unique")
-;(setq tex-pdfview-command "texworks")
-;(setq tex-pdfview-command "texstudio --pdf-viewer-only")
-(setq dviprint-command-format "wine cmd /c start AcroRd32.exe `echo %s | sed -e \"s/\\.[^.]*$/\\.pdf/\"`")
-(require 'dbus)
-(defun un-urlify (fname-or-url)
-  "A trivial function that replaces a prefix of file:/// with just /."
-  (if (string= (substring fname-or-url 0 8) "file:///")
-      (substring fname-or-url 7)
-    fname-or-url))
-(defun evince-inverse-search (file linecol &rest ignored)
-  (let* ((fname (decode-coding-string (url-unhex-string (un-urlify file)) 'utf-8))
-         (buf (find-file fname))
-         (line (car linecol))
-         (col (cadr linecol)))
-    (if (null buf)
-        (message "[Synctex]: %s is not opened..." fname)
-      (switch-to-buffer buf)
-      (goto-line (car linecol))
-      (unless (= col -1)
-        (move-to-column col))
-      (x-focus-frame (selected-frame)))))
-(dbus-register-signal
- :session nil "/org/gnome/evince/Window/0"
- "org.gnome.evince.Window" "SyncSource"
- 'evince-inverse-search)
-(with-eval-after-load 'yatexprc
-  (defun YaTeX-preview-jump-line ()
-    "Call jump-line function of various previewer on current main file"
-    (interactive)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (let*((pf (or YaTeX-parent-file
-                      (save-excursion (YaTeX-visit-main t) (buffer-file-name))))
-              (pdir (file-name-directory pf))
-              (bnr (substring pf 0 (string-match "\\....$" pf)))
-              ;(cf (file-relative-name (buffer-file-name) pdir))
-              (cf (buffer-file-name)) ;2016-01-08
-              (buffer (get-buffer-create " *preview-jump-line*"))
-              (line (count-lines (point-min) (point-end-of-line)))
-              (previewer (YaTeX-preview-default-previewer))
-              (cmd (cond
-                    ((string-match "Skim" previewer)
-                     (format "%s %d '%s.pdf' '%s'"
-                             YaTeX-cmd-displayline line bnr cf))
-                    ((string-match "evince" previewer)
-                     (format "%s '%s.pdf' %d '%s'"
-                             "fwdevince" bnr line cf))
-                    ((string-match "sumatra" previewer)
-                     (format "%s \"%s.pdf\" -forward-search \"%s\" %d"
-                             previewer bnr cf line))
-                    ((string-match "zathura" previewer)
-                     (format "%s --synctex-forward '%d:0:%s' '%s.pdf'"
-                             previewer line cf bnr))
-                    ((string-match "qpdfview" previewer)
-                     (format "%s '%s.pdf#src:%s:%d:0'"
-                             previewer bnr cf line))
-                    ((string-match "okular" previewer)
-                     (format "%s '%s.pdf#src:%d %s'"
-                             previewer bnr line (expand-file-name cf)))
-                    )))
-          (YaTeX-system cmd "jump-line" 'noask pdir))))))
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (auto-fill-mode -1)))
-;;
-;; RefTeX with YaTeX
-;;
-;(add-hook 'yatex-mode-hook 'turn-on-reftex)
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (reftex-mode 1)
-             (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
-             (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region)))
-
 
 ;; 括弧の色を強調する設定
+(require-package 'cl-lib)
+(require-package 'color)
 (require 'cl-lib)
 (require 'color)
 (defun rainbow-delimiters-using-stronger-colors ()
