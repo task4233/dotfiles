@@ -47,6 +47,7 @@ source ~/.git-completion.bash
 source ~/.git-prompt.sh
 
 # set path
+export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/go/bin
 export GOPATH=$HOME/work/go
 export GOROOT=$HOME/go
