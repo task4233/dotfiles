@@ -13,8 +13,13 @@
 /.ssh/*
 !.ssh/rsa.pub
 
+## gdb
+!.gdbinit
+
 ## emacs
 # ref: [.gitignore whitelist on directory and its contents](https://stackoverflow.com/questions/15288712/gitignore-whitelist-on-directory-and-its-contents) 
 !.emacs.d
 /.emacs.d/*
 !.emacs.d/init.el
+
+!authorize_gpg.sh
