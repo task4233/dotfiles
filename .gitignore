@@ -11,7 +11,7 @@
 ## pubkey
 !.ssh
 /.ssh/*
-!.ssh/rsa.pub
+!.ssh/git_rsa.pub
 
 ## gdb
 !.gdbinit
