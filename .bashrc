@@ -52,6 +52,10 @@ export PATH=$PATH:$HOME/go/bin
 export GOPATH=$HOME/work/go
 export GOROOT=$HOME/go
 export PATH=$GOPATH/bin:$PATH
+export CPATH="/usr/lib/llvm-10/include:$CPATH"
+export LIBRARY_PATH="/usr/lib/llvm-10/lib:$LIBRARY_PATH"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 # tmux setting
 SESSION_NAME=term

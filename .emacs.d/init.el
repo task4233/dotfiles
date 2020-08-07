@@ -35,6 +35,12 @@ locate PACKAGE."
 ;; show line-num
 (global-linum-mode)
 (setq linum-format "%4d")
+(setq linum-delay t)
+(defadvice linum-schedule (around my-linum-schedule () activate)
+  (run-with-idle-timer 0.2 nil #'linum-update-current))
+
+;; set tab with
+(setq default-tab-width 2)
 
 ;; hl-linemode
 (defface my-hl-line-face
@@ -105,7 +111,7 @@ locate PACKAGE."
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 ;;
-;; vue mode
+;; flycheck(vue, c++)
 ;;
 (require-package 'flycheck)
 (require 'flycheck)
@@ -116,6 +122,9 @@ locate PACKAGE."
 (flycheck-add-mode 'javascript-eslint 'vue-html-mode)
 (flycheck-add-mode 'javascript-eslint 'css-mode)
 (add-hook 'vue-mode-hook 'flycheck-mode)
+(add-hook 'c++-mode-hook 'company-mode) ; 補完用
+(add-hook 'c++-mode-hook 'flycheck-mode) ; チェック用
+(add-hook 'c++-mode-hook #'lsp)
 
 ;;
 ;; go mode & auto-complete
@@ -187,7 +196,7 @@ locate PACKAGE."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (yaml-mode add-node-modules-path vue-mode js2-mode neotree web-mode yatex company-go flycheck go-mode undo-tree rainbow-delimiters auto-complete atom-one-dark-theme))))
+    (clang-format company-lsp lsp-ui markdown-mode lsp-mode go-complete yaml-mode add-node-modules-path vue-mode js2-mode neotree web-mode yatex company-go flycheck go-mode undo-tree rainbow-delimiters auto-complete atom-one-dark-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
